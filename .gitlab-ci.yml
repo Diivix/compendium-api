@@ -1,0 +1,57 @@
+image: docker:stable
+
+services:
+  - docker:dind
+
+stages:
+- build
+- test
+- release
+
+variables:
+  TEST_IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:$CI_COMMIT_REF_NAME
+  RELEASE_IMAGE: $CI_REGISTRY/$CI_PROJECT_PATH:latest
+
+before_script:
+  - docker info
+  - docker login registry.gitlab.com -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD
+
+build:
+  stage: build
+  script:
+    - docker build -t $TEST_IMAGE .
+    - docker push $TEST_IMAGE
+  tags:
+    - docker
+
+test:
+  stage: test
+  script:
+    - docker pull $TEST_IMAGE
+    - apk add openssl
+    - apk add curl
+    - mkdir keys
+    - openssl genrsa -out keys/private.key 2048
+    - openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key
+    # - openssl req -new -newkey rsa:2048 -days 365 -nodes -x509 -subj "/C=AU/ST=ACT/L=Canberra/O=OrangeLightning/CN=CompendiumApi" -keyout keys/server.key -out keys/server.crt
+    - docker container create --name $CI_PROJECT_NAME -p 3040:3040 $TEST_IMAGE
+    - docker cp keys/. $CI_PROJECT_NAME:/data/keys
+    - rm -r keys
+    - docker container start $CI_PROJECT_NAME
+    - sleep 5
+    - docker exec -t --workdir /app compendium-api node_modules/.bin/sequelize db:migrate
+    - docker exec -t --workdir /app compendium-api node_modules/.bin/sequelize db:seed:all
+    - curl -kv http://docker:3040
+  tags:
+    - docker
+
+release:
+  stage: release
+  script:
+    - docker pull $TEST_IMAGE
+    - docker tag $TEST_IMAGE $RELEASE_IMAGE
+    - docker push $RELEASE_IMAGE
+  only:
+    - master
+  tags:
+    - docker
