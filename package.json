@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "start": "node --optimize_for_size --max_old_space_size=256 --gc_interval=100 src/server.js"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",

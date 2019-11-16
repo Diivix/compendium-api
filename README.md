@@ -63,3 +63,26 @@ docker image rm compendium-api
 ```
 
 To ssh into the container run `docker exec -it compendium-api /bin/bash`.
+
+## Database Schema
+
++----------------+         +----------------+        +-----------------+
+|users           |         |users_characters|        |characters       |
++----------------+         +----------------+        +-----------------+
+|id              |         |user_id         |        |id               |
+|email           +---------+character_id    +--------+name             |
++----------------+         +----------------+        |level            |
+                                                     |class            |
+                                                     |description      |
+                                                     +-------+---------+
+                                                             |
+                                                             |
+                                                             |
+                           +----------------+        +-------+---------+
+                           |spells          |        |characters_spells|
+                           +----------------+        +-----------------+
+                           |id              |        |character_id     |
+                           |                +--------+spell_id         |
+                           +----------------+        +-----------------+
+
+
