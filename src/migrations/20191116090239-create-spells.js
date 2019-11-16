@@ -9,9 +9,10 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
+        allowNull: false,
         type: Sequelize.STRING
       },
-      classtypes: {
+      classTypes: {
         type: Sequelize.STRING
       },
       components: {
@@ -23,7 +24,7 @@ module.exports = {
       level: {
         type: Sequelize.INTEGER
       },
-      castingtime: {
+      castingTime: {
         type: Sequelize.STRING
       },
       range: {
@@ -38,7 +39,7 @@ module.exports = {
       description: {
         type: Sequelize.STRING
       },
-      athigherlevels: {
+      atHigherLevels: {
         type: Sequelize.STRING
       },
       reference: {

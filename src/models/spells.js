@@ -2,16 +2,16 @@
 module.exports = (sequelize, DataTypes) => {
   const spells = sequelize.define('spells', {
     name: DataTypes.STRING,
-    classtypes: DataTypes.STRING,
+    classTypes: DataTypes.STRING,
     components: DataTypes.STRING,
     school: DataTypes.STRING,
     level: DataTypes.INTEGER,
-    castingtime: DataTypes.STRING,
+    castingTime: DataTypes.STRING,
     range: DataTypes.STRING,
     materials: DataTypes.STRING,
     duration: DataTypes.STRING,
     description: DataTypes.STRING,
-    athigherlevels: DataTypes.STRING,
+    atHigherLevels: DataTypes.STRING,
     reference: DataTypes.STRING
   }, {});
   spells.associate = function(models) {

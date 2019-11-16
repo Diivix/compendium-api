@@ -4,51 +4,63 @@ module.exports = {
     return queryInterface.sequelize.transaction((t) => {
       return Promise.all([
         queryInterface.createTable('users_characters', {
-          userid: {
+          userId: {
             type: Sequelize.INTEGER,
             references: {
               model: {
                 tableName: 'users',
-                schema: 'schema'
               },
               key: 'id'
             },
             allowNull: false
           },
-          characterid: {
+          characterId: {
             type: Sequelize.INTEGER,
             references: {
               model: {
                 tableName: 'characters',
-                schema: 'schema'
               },
               key: 'id'
             },
             allowNull: false
+          },
+          createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE
+          },
+          updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE
           }
         }, { transaction: t }),
         queryInterface.createTable('characters_spells', {
-          characterid: {
+          characterId: {
             type: Sequelize.INTEGER,
             references: {
               model: {
                 tableName: 'characters',
-                schema: 'schema'
               },
               key: 'id'
             },
             allowNull: false
           },
-          spellid: {
+          spellId: {
             type: Sequelize.INTEGER,
             references: {
               model: {
                 tableName: 'spells',
-                schema: 'schema'
               },
               key: 'id'
             },
             allowNull: false
+          },
+          createdAt: {
+            allowNull: false,
+            type: Sequelize.DATE
+          },
+          updatedAt: {
+            allowNull: false,
+            type: Sequelize.DATE
           }
         }, { transaction: t })
       ]);

@@ -9,12 +9,13 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       name: {
-        type: Sequelize.STRING
+          allowNull: false,
+          type: Sequelize.STRING
       },
       level: {
         type: Sequelize.INTEGER
       },
-      class: {
+      classType: {
         type: Sequelize.STRING
       },
       description: {
