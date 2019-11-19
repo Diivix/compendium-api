@@ -33,11 +33,11 @@ router.post('/', async function(req, res) {
     .findByPk(id)
     .then(user => {
       db.characters
-        .create({ name, level, classType, description, date, date })
+        .create({ userId: id, name, level, classType, description, date, date })
         .then(character => {
           user.addCharacters(character);
+          res.status(200).send(character);
         })
-        .then(characters => res.status(200).send(characters));
     })
     .catch(err => {
       debug('There was an error getting the user', JSON.stringify(err));
