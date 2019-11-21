@@ -13,10 +13,10 @@ module.exports = {
         type: Sequelize.STRING
       },
       classTypes: {
-        type: Sequelize.STRING
+        type: Sequelize.JSON
       },
       components: {
-        type: Sequelize.STRING
+        type: Sequelize.JSON
       },
       school: {
         type: Sequelize.STRING
@@ -31,16 +31,16 @@ module.exports = {
         type: Sequelize.STRING
       },
       materials: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(500)
       },
       duration: {
         type: Sequelize.STRING
       },
       description: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(5000)
       },
       atHigherLevels: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING(5000)
       },
       reference: {
         type: Sequelize.STRING

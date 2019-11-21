@@ -13,12 +13,11 @@ module.exports = {
       }], {});
     */
 
-    //TODO: Change this to seed spells instead.
     return queryInterface.bulkInsert('users', [
       {
         email: 'aegar@compendium.com',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString()
+        createdAt: new Date(),
+        updatedAt: new Date()
       }], {});
   },
 

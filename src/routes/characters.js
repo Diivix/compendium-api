@@ -15,8 +15,8 @@ router.get('/', function(req, res) {
         .then(characters => res.status(200).send(characters))
     })
     .catch(err => {
-      debug('There was an error getting the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error retrieving user and characters.', JSON.stringify(err));
+      return res.status(500).send("Error retrieving user and characters.");
     });
 });
 
@@ -40,8 +40,8 @@ router.post('/', async function(req, res) {
         })
     })
     .catch(err => {
-      debug('There was an error getting the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error retrieving user and adding characters.', JSON.stringify(err));
+      return res.status(500).send("Error retrieving user and adding characters.");
     });
 });
 
@@ -58,8 +58,8 @@ router.delete('/:id', function(req, res) {
         .then(characters => res.status(200).send(characters));
     })
     .catch(err => {
-      debug('There was an error getting the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error retrieving user and removing characters.', JSON.stringify(err));
+      return res.status(500).send("Error retrieving user and removing characters.");
     });
 });
 

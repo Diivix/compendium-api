@@ -9,8 +9,8 @@ router.get('/', function(req, res) {
     .findByPk(id)
     .then(user => res.status(200).send(cleanUser(user)))
     .catch(err => {
-      debug('There was an error getting the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error retrieving user.', JSON.stringify(err));
+      return res.status(500).send("Error retrieving user.");
     });
 });
 
@@ -24,8 +24,8 @@ router.post('/', async function(req, res) {
       return res.status(200).send(user);
     })
     .catch(err => {
-      debug('There was an error creating the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error creating user.', JSON.stringify(err));
+      return res.status(500).send("Error creating user.");
     });
 });
 
@@ -36,15 +36,14 @@ router.delete('/', function(req, res) {
     .then(user => user.destroy({ force: true }))
     .then(() => res.status(200).send(id))
     .catch(err => {
-      debug('There was an error getting the user', JSON.stringify(err));
-      return res.status(500).send(err);
+      debug('Error removing user.', JSON.stringify(err));
+      return res.status(500).send("Error removing user.");
     });
 });
 
 const cleanUser = user => {
   return {
     username: user.username,
-    email: user.email,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };
