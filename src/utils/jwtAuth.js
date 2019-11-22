@@ -15,13 +15,13 @@ const strategy = new JwtStrategy(opts, function(jwt_payload, done) {
   debug('Authenticating with Passport jwt strategy');
   debug('JWT payload is: %o', JSON.stringify(jwt_payload));
   db.users
-    .findOne({ where: { email: jwt_payload.claims.sub } })
-    .then(user => {
-      if (!user) {
-        debug('User not found');
-        return done('User not found.', false);
+    .findOrCreate({ where: { email: jwt_payload.claims.sub } })
+    .then(([user, created]) => {
+      if(created) {
+        debug('User created, new user is %o', user.email);
+      } else {
+        debug('User found, existing user is %o', user.email);
       }
-      debug('User authenticated, user is %o', user.username);
       return done(null, user);
     })
     .catch(err => {
