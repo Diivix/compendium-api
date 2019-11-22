@@ -2,8 +2,13 @@
   "name": "compendium-api",
   "version": "0.1.0",
   "scripts": {
-    "dev": "nodemon src/server.js",
-    "start": "node --optimize_for_size --max_old_space_size=256 --gc_interval=100 src/server.js"
+    "dev": "nodemon -r dotenv/config src/index.js",
+    "test": "jest",
+    "start": "node --optimize_for_size --max_old_space_size=256 --gc_interval=100 src/index.js",
+    "migrate": "npx sequelize-cli db:migrate",
+    "seed:all": "npx sequelize-cli db:seed:all",
+    "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed:all",
+    "pretest": "npm run migrate:reset"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
@@ -22,7 +27,16 @@
     "url": "^0.11.0"
   },
   "devDependencies": {
+    "jest": "^24.9.0",
     "nodemon": "^1.19.4",
-    "sequelize-cli": "^5.5.1"
+    "sequelize-cli": "^5.5.1",
+    "supertest": "^4.0.2"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFiles": ["dotenv/config"],
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
   }
 }

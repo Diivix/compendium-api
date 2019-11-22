@@ -1,16 +1,13 @@
-require('dotenv').config()
-
 const express = require('express');
-const http = require('http');
 const helmet = require('helmet');
 // const cors = require('cors')
 const passport = require('passport');
 const debug = require('debug')('server') // debug logger
 const morgan = require('morgan')         // request logger
 
-const userRouter = require('./routes/user');
-const characterRouter = require('./routes/characters');
-// const spellsRouter = require('./routes/spells');
+const usersRouter = require('./routes/users');
+const charactersRouter = require('./routes/characters');
+const spellsRouter = require('./routes/spells');
 const jwtStrategy = require('./utils/jwtAuth');
 
 const app = express();
@@ -35,19 +32,13 @@ app.use(morgan('dev'));
 passport.use(jwtStrategy);
 
 // Routes
-app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
-app.use('/characters', passport.authenticate('jwt', { session: false }), characterRouter);
-// app.use('/spells', passport.authenticate('jwt', { session: false }), spellsRouter);
+app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
+app.use('/characters', passport.authenticate('jwt', { session: false }), charactersRouter);
+app.use('/spells', passport.authenticate('jwt', { session: false }), spellsRouter);
 
 // Default route
 app.use('/', function(req, res) {
   res.send('Compendium api works!');
 });
 
-http.createServer(app).listen(process.env.PORT);
-// https.createServer({
-//   key: fs.readFileSync(process.env.SERVER_KEY),
-//   cert: fs.readFileSync(process.env.SERVER_CERT)
-// }, app).listen(process.env.PORT);
-
-debug('Server listening on port ' + process.env.PORT);
+module.exports = app;

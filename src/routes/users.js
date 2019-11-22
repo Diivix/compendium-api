@@ -1,5 +1,4 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const db = require('../models');
 const debug = require('debug')('route:user'); // debug logger
 
@@ -11,21 +10,6 @@ router.get('/', function(req, res) {
     .catch(err => {
       debug('Error retrieving user.', JSON.stringify(err));
       return res.status(500).send("Error retrieving user.");
-    });
-});
-
-router.post('/', async function(req, res) {
-  let { email } = req.body;
-  const date = new Date().toISOString();
-
-  db.users
-    .create({ email, date, date })
-    .then(user => {
-      return res.status(200).send(user);
-    })
-    .catch(err => {
-      debug('Error creating user.', JSON.stringify(err));
-      return res.status(500).send("Error creating user.");
     });
 });
 

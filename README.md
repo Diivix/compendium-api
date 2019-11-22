@@ -20,8 +20,8 @@ See [Using sequalize.js](https://stackabuse.com/using-sequelize-js-and-sqlite-in
 This is all that should be needed from now on, assuming the initial migration and seeders have been created:
 
 ```bash
-node_modules/.bin/sequelize db:migrate
-node_modules/.bin/sequelize db:seed:all
+npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
 ```
 
 #### From Scratch
