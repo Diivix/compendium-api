@@ -30,11 +30,16 @@ test:
     - docker pull $TEST_IMAGE
     - apk add openssl
     - apk add curl
+    - mkdir keys
+    - openssl genrsa -out keys/private.key 2048
+    - openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key
+    - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
+    - docker cp keys/. $CI_PROJECT_NAME:/data/keys
+    - rm -r keys
     - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
     - docker container start $CI_PROJECT_NAME
     - sleep 5
     - docker exec -t --workdir /app $CI_PROJECT_NAME npm run migrate:reset
-    - docker exec -t --workdir /app $CI_PROJECT_NAME npm run createkeys
     - curl -kv http://docker:3040
   tags:
     - docker
