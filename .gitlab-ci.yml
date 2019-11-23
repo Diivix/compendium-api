@@ -30,6 +30,7 @@ test:
     - docker pull $TEST_IMAGE
     - apk add openssl
     - apk add curl
+    - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
     - docker container start $CI_PROJECT_NAME
     - sleep 5
     - docker exec -t --workdir /app ticketbooth npm run migrate:reset
