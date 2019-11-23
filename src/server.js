@@ -32,9 +32,9 @@ app.use(morgan('dev'));
 passport.use(jwtStrategy);
 
 // Routes
-app.use('/users', passport.authenticate('jwt', { session: false }), userRouter);
-app.use('/characters', passport.authenticate('jwt', { session: false }), characterRouter);
-app.use('/spells', passport.authenticate('jwt', { session: false }), spellRouter);
+app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
+app.use('/character', passport.authenticate('jwt', { session: false }), characterRouter);
+app.use('/spell', passport.authenticate('jwt', { session: false }), spellRouter);
 
 // Default route
 app.use('/', function(req, res) {
