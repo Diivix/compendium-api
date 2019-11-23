@@ -33,8 +33,8 @@ test:
     - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
     - docker container start $CI_PROJECT_NAME
     - sleep 5
-    - docker exec -t --workdir /app ticketbooth npm run migrate:reset
-    - docker exec -t --workdir /app ticketbooth npm run createkeys
+    - docker exec -t --workdir /app $CI_PROJECT_NAME npm run migrate:reset
+    - docker exec -t --workdir /app $CI_PROJECT_NAME npm run createkeys
     - curl -kv http://docker:3040
   tags:
     - docker
