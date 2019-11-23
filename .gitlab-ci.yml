@@ -36,7 +36,6 @@ test:
     - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
     - docker cp keys/. $CI_PROJECT_NAME:/data/keys
     - rm -r keys
-    - docker container create --name $CI_PROJECT_NAME -p 3080:3080 $TEST_IMAGE
     - docker container start $CI_PROJECT_NAME
     - sleep 5
     - docker exec -t --workdir /app $CI_PROJECT_NAME npm run migrate:reset

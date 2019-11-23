@@ -9,11 +9,7 @@ const Op = require('sequelize').Op;
 //  "level": 2,
 //  "castingTime": "1 action",
 //  "range": "120 feet",
-//  "materials": "a piece of wool",
 //  "duration": "instant",
-//  "description": "Does something cool",
-//  "atHigherLevels": "Does something awesome",
-//  "reference": "Page 666"
 //}
 const queryBuilder = (query) => {
 

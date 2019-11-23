@@ -8,9 +8,16 @@ const uniqueSpells = (spells) => {
 
   spells.forEach(spell => {
     names.push(spell.name);
+    classTypes.push(spell);
+    components.push(spell);
+    schools.push(spell);
+    levels.push(spell);
+    castingTimes.push(spell);
+    ranges.push(spell);
+    durations.push(spell);
   });
 
-  // let unique = a.filter((item, i, arr) => arr.indexOf(item) === i);
+  //let unique = a.filter((item, i, arr) => arr.indexOf(item) === i);
 
   return names;
 }
