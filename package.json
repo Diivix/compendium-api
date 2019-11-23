@@ -8,7 +8,8 @@
     "migrate": "npx sequelize-cli db:migrate",
     "seed:all": "npx sequelize-cli db:seed:all",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed:all",
-    "pretest": "npm run migrate:reset"
+    "createkeys": "rm -rf ./keys && mkdir keys && openssl genrsa -out keys/private.key 2048 && openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key",
+    "pretest": "npm run migrate:reset && npm run createkeys"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
@@ -29,12 +30,13 @@
   "devDependencies": {
     "jest": "^24.9.0",
     "nodemon": "^1.19.4",
-    "sequelize-cli": "^5.5.1",
     "supertest": "^4.0.2"
   },
   "jest": {
     "testEnvironment": "node",
-    "setupFiles": ["dotenv/config"],
+    "setupFiles": [
+      "dotenv/config"
+    ],
     "coveragePathIgnorePatterns": [
       "/node_modules/"
     ]

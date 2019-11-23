@@ -5,9 +5,9 @@ const passport = require('passport');
 const debug = require('debug')('server') // debug logger
 const morgan = require('morgan')         // request logger
 
-const usersRouter = require('./routes/users');
-const charactersRouter = require('./routes/characters');
-const spellsRouter = require('./routes/spells');
+const userRouter = require('./routes/user');
+const characterRouter = require('./routes/character');
+const spellRouter = require('./routes/spell');
 const jwtStrategy = require('./utils/jwtAuth');
 
 const app = express();
@@ -32,9 +32,9 @@ app.use(morgan('dev'));
 passport.use(jwtStrategy);
 
 // Routes
-app.use('/users', passport.authenticate('jwt', { session: false }), usersRouter);
-app.use('/characters', passport.authenticate('jwt', { session: false }), charactersRouter);
-app.use('/spells', passport.authenticate('jwt', { session: false }), spellsRouter);
+app.use('/users', passport.authenticate('jwt', { session: false }), userRouter);
+app.use('/characters', passport.authenticate('jwt', { session: false }), characterRouter);
+app.use('/spells', passport.authenticate('jwt', { session: false }), spellRouter);
 
 // Default route
 app.use('/', function(req, res) {

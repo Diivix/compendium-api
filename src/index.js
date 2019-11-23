@@ -1,5 +1,5 @@
 const http = require('http');
-const debug = require('debug')('server') // debug logger
+const debug = require('debug')('index') // debug logger
 const server = require('./server');
 
 http.createServer(server).listen(process.env.PORT);
