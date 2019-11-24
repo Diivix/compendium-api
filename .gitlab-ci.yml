@@ -31,6 +31,7 @@ test:
     - apk add openssl
     - apk add curl
     - mkdir keys
+    # Need to add keys before the app starts or starting the container will fail.
     - openssl genrsa -out keys/private.key 2048
     - openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key
     - docker container create --name $CI_PROJECT_NAME -p 3040:3040 $TEST_IMAGE
@@ -41,6 +42,7 @@ test:
     - sleep 5
     - docker exec -t --workdir /app $CI_PROJECT_NAME npm run migrate:reset
     - curl -kv http://docker:3040
+    - docker exec -t --workdir /app $CI_PROJECT_NAME npm run test
   tags:
     - docker
 

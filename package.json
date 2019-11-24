@@ -3,13 +3,14 @@
   "version": "0.1.0",
   "scripts": {
     "dev": "nodemon -r dotenv/config src/index.js",
+    "pretest": "npm run migrate:reset && npm run createkeys",
     "test": "jest",
     "start": "node --optimize_for_size --max_old_space_size=256 --gc_interval=100 src/index.js",
     "migrate": "npx sequelize-cli db:migrate",
     "seed:all": "npx sequelize-cli db:seed:all",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed:all",
     "createkeys": "rm -rf ./keys && mkdir keys && openssl genrsa -out keys/private.key 2048 && openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key",
-    "pretest": "npm run migrate:reset && npm run createkeys"
+    "createkeys:dev": "rm -rf ./keys/* && ln -s ../ticketbooth/keys/public.key ./keys/public.key"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",

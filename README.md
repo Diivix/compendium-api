@@ -40,6 +40,10 @@ node_modules/.bin/sequelize db:seed:all
 
 The public key needs to be retrieved from the Ticketbooth server. This key is used to validate the JWTs on incoming requests.
 
+```bash
+docker cp ticketbooth:/data/keys/public.key compendium-api:/data/keys
+```
+
 ## Deploying on Docker Locally
 
 ### Build and start
