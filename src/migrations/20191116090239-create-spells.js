@@ -45,6 +45,9 @@ module.exports = {
       reference: {
         type: Sequelize.STRING
       },
+      tags: {
+        type: Sequelize.JSON
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

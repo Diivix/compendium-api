@@ -12,7 +12,8 @@ module.exports = (sequelize, DataTypes) => {
     duration: DataTypes.STRING,
     description: DataTypes.STRING(5000),
     atHigherLevels: DataTypes.STRING(5000),
-    reference: DataTypes.STRING
+    reference: DataTypes.STRING,
+    tags: DataTypes.JSON
   }, {});
   spells.associate = function(models) {
     // associations can be defined here
