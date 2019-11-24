@@ -19,6 +19,8 @@ ENV NODE_ENV='production'
 ENV PORT='3040'
 ENV CORS_WHITELIST='https://localhost:3000,https://localhost:3001'
 ENV PUBLIC_KEY='/data/keys/public.key'
+# Private key is only used for testing. It will not exist in production.
+ENV PRIVATE_KEY='/data/keys/private.key'
 ENV JWT_ISSUER='diivix.com'
 ENV JWT_AUDIENCE='diivix.com'
 ENV JWT_EXPIRES_IN='12h'
