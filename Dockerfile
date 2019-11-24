@@ -18,10 +18,10 @@ RUN npm install
 ENV NODE_ENV='production'
 ENV PORT='3040'
 ENV CORS_WHITELIST='https://localhost:3000,https://localhost:3001'
-ENV PUBLIC_KEY='./keys/public.key'
+ENV PUBLIC_KEY='/data/keys/public.key'
 ENV JWT_ISSUER='diivix.com'
 ENV JWT_AUDIENCE='diivix.com'
 ENV JWT_EXPIRES_IN='12h'
-ENV SPELLS_DATA='../../Data/compendium/spells.json'
+ENV SPELLS_DATA='/data/spells.json'
 
 CMD [ "npm", "start" ]

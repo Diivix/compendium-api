@@ -1,0 +1,6 @@
+node_modules/
+.env
+.env.example
+database.sqlite3
+keys/
+data/
