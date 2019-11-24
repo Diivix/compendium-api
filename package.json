@@ -10,7 +10,7 @@
     "seed:all": "npx sequelize-cli db:seed:all",
     "migrate:reset": "npx sequelize-cli db:migrate:undo:all && npm run migrate && npm run seed:all",
     "createkeys": "rm -rf ./keys && mkdir keys && openssl genrsa -out keys/private.key 2048 && openssl rsa -in keys/private.key -outform PEM -pubout -out keys/public.key",
-    "createkeys:dev": "rm -rf ./keys/* && ln -s ../ticketbooth/keys/public.key ./keys/public.key"
+    "createkeys:dev": "rm -rf ./keys/* && ln -s ../../ticketbooth/keys/public.key ./keys/public.key"
   },
   "dependencies": {
     "bcrypt": "^3.0.6",
