@@ -3,7 +3,7 @@ const unique = {
 };
 
 const uniqueSpells = spells => {
-  const names = [], classTypes = [], components = [], schools = [], levels = [], castingTimes = [], ranges = [], durations = [];
+  const names = [], classTypes = [], components = [], schools = [], levels = [], castingTimes = [], ranges = [], durations = [], tags = [];
 
   spells.forEach(spell => {
     names.push(spell.name);
@@ -14,6 +14,7 @@ const uniqueSpells = spells => {
     castingTimes.push(spell.castingTime);
     ranges.push(spell.range);
     durations.push(spell.duration);
+    spell.tags.forEach(value => tags.push(value));
   });
 
   return (uniqueValues = {
@@ -24,7 +25,8 @@ const uniqueSpells = spells => {
     levels:       levels.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     castingTimes: castingTimes.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     ranges:       ranges.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
-    durations:    durations.filter((item, i, arr) => arr.indexOf(item) === i).sort()
+    durations:    durations.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
+    tags:         tags.filter((item, i, arr) => arr.indexOf(item) === i).sort()
   });
 };
 
