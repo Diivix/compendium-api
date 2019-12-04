@@ -40,13 +40,15 @@ router.get('/unique', function(req, res) {
 });
 
 //
-// Get spells by filter
+// Get spells by tags
 //
 // If the id property exists, don't consider the tags.
+// Use AND operator if tags exists and operatorIsAnd is true. Otherwise default to OR operator.
 // Query object example (req.body)
 // {
 //    "id": 1,
 //    "tags": ["classtype-sorcerer", "range-touch"]
+//    "operatorAnd": true | false
 // }
 //
 router.post('/', function(req, res) {
@@ -57,17 +59,23 @@ router.post('/', function(req, res) {
   }
 
   const id = query.hasOwnProperty('id') && !isNaN(query.id) ? parseInt(query.id) : 0;
-  const queryAttributes = id !== 0 ? { where: { id: id } } : { };
-  const attributes = req.query.lightlyload === 'true' ? exclusionAttributes : { };
-  const combinedAttributes = id !== 0 && req.query.lightlyload === 'true' ? Object.assign(attributes, queryAttributes) : attributes;
+  const queryAttributes = id !== 0 ? { where: { id: id } } : {};
+  const combinedAttributes = req.query.lightlyload === 'true' ? Object.assign(queryAttributes, exclusionAttributes) : queryAttributes;
+
+  const operatorAnd = query.hasOwnProperty('operatorAnd') && query.operatorAnd === true ? true : false;
 
   return db.spells
     .findAll(combinedAttributes)
     .then(spells => {
-      if(spells.length > 1 && query.hasOwnProperty('tags')) {
-        // FIXME: This is bad. Were getting all the spells from the db then filtering on them :(
-        let filteredSpells = spells.filter(spell => spell.tags.some(tag => query.tags.includes(tag)));
-        // TODO: Remove tags from spells if lightlyloaded. This TODO becomes redundant if the above is fixed.
+      if (spells.length > 1 && query.hasOwnProperty('tags')) {
+        let filteredSpells = [];
+        if (operatorAnd) {
+          // FIXME: This is bad. Were getting all the spells from the db then filtering on them :(
+          filteredSpells = spells.filter(spell => query.tags.every(tag => spell.tags.includes(tag)));
+        } else {
+          // FIXME: This is bad. Were getting all the spells from the db then filtering on them :(
+          filteredSpells = spells.filter(spell => spell.tags.some(tag => query.tags.includes(tag)));
+        }
         return res.status(200).send(filteredSpells);
       }
       return res.status(200).send(spells);
