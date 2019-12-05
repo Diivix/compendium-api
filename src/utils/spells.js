@@ -1,8 +1,9 @@
-const unique = {
-  spells: items => uniqueSpells(items)
+const utils = {
+  unique: items => unique(items),
+  filters: items => filters(items)
 };
 
-const uniqueSpells = spells => {
+const unique = spells => {
   const names = [], classTypes = [], components = [], schools = [], levels = [], castingTimes = [], ranges = [], durations = [], tags = [];
 
   spells.forEach(spell => {
@@ -17,7 +18,7 @@ const uniqueSpells = spells => {
     spell.tags.forEach(value => tags.push(value));
   });
 
-  return (uniqueValues = {
+  return {
     names:        names.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     classTypes:   classTypes.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     components:   components.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
@@ -27,7 +28,25 @@ const uniqueSpells = spells => {
     ranges:       ranges.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     durations:    durations.filter((item, i, arr) => arr.indexOf(item) === i).sort(),
     tags:         tags.filter((item, i, arr) => arr.indexOf(item) === i).sort()
-  });
+  };
 };
 
-module.exports = unique;
+//
+// Spells in this case only requires the properties id, name, tags to be present.
+// Returns: { names: [{ id: 0, name: "some spell" }], tags: ["tag1", "tag2"] }
+//
+const filters = spells => {
+  const names = [], tags = [];
+
+  spells.forEach(spell => {
+    names.push({id: spell.id, name: spell.name});
+    spell.tags.forEach(value => tags.push(value));
+  });
+
+  return {
+    names:        names,
+    tags:         tags.filter((item, i, arr) => arr.indexOf(item) === i).sort()
+  };
+};
+
+module.exports = utils;

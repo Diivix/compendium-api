@@ -2,7 +2,7 @@ const router = require('express').Router();
 const Op = require('sequelize').Op;
 const db = require('../models');
 const debug = require('debug')('route:spell'); // debug logger
-const unique = require('../utils/unique');
+const utils = require('../utils/spells');
 
 const exclusionAttributes = { attributes: { exclude: ['description', 'atHigherLevels', 'reference', 'createdAt', 'updatedAt'] } };
 
@@ -31,11 +31,27 @@ router.get('/unique', function(req, res) {
   return db.spells
     .findAll()
     .then(spells => {
-      return res.status(200).send(unique.spells(spells));
+      return res.status(200).send(utils.unique(spells));
     })
     .catch(err => {
       debug('Error retrieving spells. %o', JSON.stringify(err));
       return res.status(500).send('Error retrieving spells.');
+    });
+});
+
+//
+// Gets spells all spell names with IDs and unique tags.
+// These are the filters that the users will use to send to /spells/query route.
+//
+router.get('/filters', function(req, res) {
+  return db.spells
+    .findAll({ attributes: ['id', 'name', 'tags'] })
+    .then(spells => {
+      return res.status(200).send(utils.filters(spells));
+    })
+    .catch(err => {
+      debug('Error retrieving spell filters. %o', JSON.stringify(err));
+      return res.status(500).send('Error retrieving spell filters.');
     });
 });
 
@@ -51,7 +67,7 @@ router.get('/unique', function(req, res) {
 //    "operatorAnd": true | false
 // }
 //
-router.post('/', function(req, res) {
+router.post('/query', function(req, res) {
   const query = req.body;
 
   if (!query.hasOwnProperty('id') && !query.hasOwnProperty('tags')) {

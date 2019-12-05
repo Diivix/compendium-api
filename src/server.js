@@ -8,7 +8,7 @@ const morgan = require('morgan')         // request logger
 const userRouter = require('./routes/user');
 const characterRouter = require('./routes/character');
 const spellRouter = require('./routes/spell');
-const jwtStrategy = require('./utils/jwtAuth');
+const jwtStrategy = require('./utils/auth');
 
 const app = express();
 debug('booting %o', 'Compendium API');
