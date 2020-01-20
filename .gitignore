@@ -99,3 +99,6 @@ typings/
 
 # Public / Private keys
 keys/
+
+# OS Environment
+.DS_Store
