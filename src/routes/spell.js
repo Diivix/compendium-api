@@ -9,12 +9,14 @@ const exclusionAttributes = { attributes: { exclude: ['description', 'atHigherLe
 //
 // Get all spells
 // [optional] url query param "lightlyload"
+// [optional] url query param "limit"
 router.get('/', function(req, res) {
   //TODO: Check if param exists, even with no value.
   const attributes = req.query.lightlyload === 'true' ? exclusionAttributes : {};
+  const combinedAttributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
 
   return db.spells
-    .findAll(attributes)
+    .findAll(combinedAttributes)
     .then(spells => {
       return res.status(200).send(spells);
     })
@@ -56,7 +58,7 @@ router.get('/filters', function(req, res) {
 });
 
 //
-// Get spells by tags
+// Get spells by id OR tags
 //
 // If the id property exists, don't consider the tags.
 // Use AND operator if tags exists and operatorIsAnd is true. Otherwise default to OR operator.
@@ -71,7 +73,11 @@ router.post('/query', function(req, res) {
   const query = req.body;
 
   if (!query.hasOwnProperty('id') && !query.hasOwnProperty('tags')) {
-    return res.status(400).send('Bad query. Both id and tags cannot be null.');
+    return res.status(400).send('Bad query. Both ID and tags cannot be null.');
+  }
+
+  if(query.hasOwnProperty('id') && isNaN(query.id)) {
+    return res.status(400).send('Bad query. ID must be a number.'); 
   }
 
   const id = query.hasOwnProperty('id') && !isNaN(query.id) ? parseInt(query.id) : 0;
