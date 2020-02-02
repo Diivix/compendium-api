@@ -3,4 +3,3 @@ node_modules/
 .env.example
 database.sqlite3
 keys/
-data/
