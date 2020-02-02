@@ -24,6 +24,6 @@ ENV PRIVATE_KEY='/data/keys/private.key'
 ENV JWT_ISSUER='diivix.com'
 ENV JWT_AUDIENCE='diivix.com'
 ENV JWT_EXPIRES_IN='12h'
-ENV SPELLS_DATA='/data/spells.json'
+ENV SPELLS_DATA='./data/spells.json'
 
 CMD [ "npm", "start" ]
