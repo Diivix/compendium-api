@@ -1,5 +1,4 @@
 const router = require('express').Router();
-const Op = require('sequelize').Op;
 const db = require('../models');
 const debug = require('debug')('route:spell'); // debug logger
 const utils = require('../utils/spells');
@@ -12,11 +11,12 @@ const exclusionAttributes = { attributes: { exclude: ['description', 'atHigherLe
 // [optional] url query param "limit"
 router.get('/', function(req, res) {
   //TODO: Check if param exists, even with no value.
-  const attributes = req.query.lightlyload === 'true' ? exclusionAttributes : {};
-  const combinedAttributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
+  let attributes = req.query.lightlyload === 'true' ? exclusionAttributes : {};
+  attributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
 
+  // FIXME: bug with ORDER causing all spells to be returned instead of a limited number of spells
   return db.spells
-    .findAll(combinedAttributes)
+    .findAll({ attributes, order: [['name', 'asc']] })
     .then(spells => {
       return res.status(200).send(spells);
     })
@@ -60,6 +60,9 @@ router.get('/filters', function(req, res) {
 //
 // Get spells by id OR tags
 //
+// [optional] url query param "lightlyload"
+// [optional] url query param "limit"
+//
 // If the id property exists, don't consider the tags.
 // Use AND operator if tags exists and operatorIsAnd is true. Otherwise default to OR operator.
 // Query object example (req.body)
@@ -81,13 +84,14 @@ router.post('/query', function(req, res) {
   }
 
   const id = query.hasOwnProperty('id') && !isNaN(query.id) ? parseInt(query.id) : 0;
-  const queryAttributes = id !== 0 ? { where: { id: id } } : {};
-  const combinedAttributes = req.query.lightlyload === 'true' ? Object.assign(queryAttributes, exclusionAttributes) : queryAttributes;
+  let attributes = id !== 0 ? { where: { id: id } } : {};
+  attributes = req.query.lightlyload === 'true' ? Object.assign(attributes, exclusionAttributes) : attributes;
+  attributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
 
   const operatorAnd = query.hasOwnProperty('operatorAnd') && query.operatorAnd === true ? true : false;
 
   return db.spells
-    .findAll(combinedAttributes)
+    .findAll({ attributes, order: [[ 'name', 'asc' ]] })
     .then(spells => {
       if (spells.length > 1 && query.hasOwnProperty('tags')) {
         let filteredSpells = [];
