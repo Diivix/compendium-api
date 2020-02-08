@@ -1,6 +1,7 @@
 const utils = {
   unique: items => unique(items),
-  filters: items => filters(items)
+  filters: items => filters(items),
+  nameComparer: (a, b) => nameComparer(a, b)
 };
 
 const unique = spells => {
@@ -47,6 +48,16 @@ const filters = spells => {
     names:        names,
     tags:         tags.filter((item, i, arr) => arr.indexOf(item) === i).sort()
   };
+};
+
+const nameComparer = (a, b) => {
+  // Use toUpperCase() to ignore character casing
+  const valueA = a.name.toUpperCase();
+  const valueB = b.name.toUpperCase();
+
+  if ( valueA > valueB ) return 1;
+  if ( valueA < valueB ) return -1;
+  return 0;
 };
 
 module.exports = utils;

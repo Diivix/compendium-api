@@ -9,16 +9,17 @@ const exclusionAttributes = { attributes: { exclude: ['description', 'atHigherLe
 // Get all spells
 // [optional] url query param "lightlyload"
 // [optional] url query param "limit"
+//
 router.get('/', function(req, res) {
   //TODO: Check if param exists, even with no value.
   let attributes = req.query.lightlyload === 'true' ? exclusionAttributes : {};
-  attributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
+  const limit = req.query.limit && !isNaN(req.query.limit) ? req.query.limit : null;
 
-  // FIXME: bug with ORDER causing all spells to be returned instead of a limited number of spells
   return db.spells
-    .findAll({ attributes, order: [['name', 'asc']] })
+    .findAll(attributes)
     .then(spells => {
-      return res.status(200).send(spells);
+      const sorted = spells.sort((a, b) => utils.nameComparer(a, b));
+      return res.status(200).send(limit !== null ? sorted.slice(0, limit) : sorted);
     })
     .catch(err => {
       debug('Error retrieving spells. %o', JSON.stringify(err));
@@ -86,12 +87,12 @@ router.post('/query', function(req, res) {
   const id = query.hasOwnProperty('id') && !isNaN(query.id) ? parseInt(query.id) : 0;
   let attributes = id !== 0 ? { where: { id: id } } : {};
   attributes = req.query.lightlyload === 'true' ? Object.assign(attributes, exclusionAttributes) : attributes;
-  attributes = req.query.limit ? Object.assign(attributes, { limit: req.query.limit }) : attributes;
 
-  const operatorAnd = query.hasOwnProperty('operatorAnd') && query.operatorAnd === true ? true : false;
+  const limit = req.query.limit && !isNaN(req.query.limit) ? req.query.limit : null;
+  const operatorAnd = query.hasOwnProperty('operatorAnd') && query.operatorAnd ? true : false;
 
   return db.spells
-    .findAll({ attributes, order: [[ 'name', 'asc' ]] })
+    .findAll(attributes)
     .then(spells => {
       if (spells.length > 1 && query.hasOwnProperty('tags')) {
         let filteredSpells = [];
@@ -102,7 +103,8 @@ router.post('/query', function(req, res) {
           // FIXME: This is bad. Were getting all the spells from the db then filtering on them :(
           filteredSpells = spells.filter(spell => spell.tags.some(tag => query.tags.includes(tag)));
         }
-        return res.status(200).send(filteredSpells);
+        const sorted = filteredSpells.sort((a, b) => utils.nameComparer(a, b));
+        return res.status(200).send(limit !== null ? sorted.slice(0, limit) : sorted);
       }
       return res.status(200).send(spells);
     })
