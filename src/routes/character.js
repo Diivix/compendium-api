@@ -21,7 +21,7 @@ router.get('/', function(req, res) {
 //
 // Delete a character
 //
-router.delete('/:id/:spellId', function(req, res) {
+router.delete('/:id/:characterId', function(req, res) {
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.params.id);
 
