@@ -3,14 +3,33 @@ const db = require('../models');
 const debug = require('debug')('route:character'); // debug logger
 
 //
-// Get all of the user's characters
+// Get all of the user's characters, lightly loaded.
 //
 router.get('/', function(req, res) {
-  const id = parseInt(req.user.id);
+  const userId = parseInt(req.user.id);
+
   return db.users
-    .findByPk(id)
+    .findByPk(userId)
     .then(user => {
       user.getCharacters().then(characters => res.status(200).send(characters));
+    })
+    .catch(err => {
+      debug('Error retrieving user and characters. %o', JSON.stringify(err));
+      return res.status(500).send('Error retrieving user and characters.');
+    });
+});
+
+//
+// Get a full character by ID
+//
+router.get('/:id', function(req, res) {
+  const userId = parseInt(req.user.id);
+  const characterId = parseInt(req.params.id);
+
+  return db.users
+    .findByPk(userId)
+    .then(user => {
+      user.getCharacters().findByPk(characterId).then(character => res.status(200).send(character));
     })
     .catch(err => {
       debug('Error retrieving user and characters. %o', JSON.stringify(err));
