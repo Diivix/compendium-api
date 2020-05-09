@@ -31,31 +31,6 @@ router.delete('/', function(req, res) {
     });
 });
 
-//
-// Add a character to a user
-//
-router.post('/character', async function(req, res) {
-  if(!req.body.name) return res.status(200).send("Character name cannot be empty.");
-
-  const id = parseInt(req.user.id);
-  const { name, level, classType, description } = req.body;
-  const date = new Date().toISOString();
-  return db.users
-    .findByPk(id)
-    .then(user => {
-      db.characters
-        .create({ userId: id, name, level, classType, description, date, date })
-        .then(character => {
-          user.addCharacters(character);
-          res.status(201).send(character);
-        })
-    })
-    .catch(err => {
-      debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
-      return res.status(500).send("Error retrieving user and adding characters.");
-    });
-});
-
 const cleanUser = user => {
   return {
     username: user.username,

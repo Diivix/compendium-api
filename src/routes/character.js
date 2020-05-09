@@ -26,16 +26,40 @@ router.get('/:id', function(req, res) {
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.params.id);
 
-  return db.users
-    .findByPk(userId)
-    .then(user => {
-      user.getCharacters().findByPk(characterId).then(character => res.status(200).send(character));
-    })
+  return db.characters
+    .findOne({ where: { id: characterId, userId: userId } })
+    .then(character => res.status(200).send(character))
     .catch(err => {
       debug('Error retrieving user and characters. %o', JSON.stringify(err));
       return res.status(500).send('Error retrieving user and characters.');
     });
 });
+
+//
+// Create a character
+//
+router.post('/', async function(req, res) {
+  if(!req.body.name) return res.status(200).send("Character name cannot be empty.");
+
+  const id = parseInt(req.user.id);
+  const { name, level, classType, description } = req.body;
+  const date = new Date().toISOString();
+  return db.users
+    .findByPk(id)
+    .then(user => {
+      db.characters
+        .create({ userId: id, name, level, classType, description, date, date })
+        .then(character => {
+          user.addCharacters(character);
+          res.status(201).send(character);
+        })
+    })
+    .catch(err => {
+      debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
+      return res.status(500).send("Error retrieving user and adding characters.");
+    });
+});
+
 
 //
 // Delete a character
