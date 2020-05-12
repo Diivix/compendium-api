@@ -41,16 +41,53 @@ router.get('/:id', function (req, res) {
 router.post('/', async function (req, res) {
   if (!req.body.name) return res.status(200).send('Character name cannot be empty.');
 
-  const id = parseInt(req.user.id);
+  const userId = parseInt(req.user.id);
   const { name, level, classType, description } = req.body;
   const date = new Date().toISOString();
   return db.users
-    .findByPk(id)
+    .findByPk(userId)
     .then((user) => {
       db.characters.create({ userId: id, name, level, classType, description, date, date }).then((character) => {
         user.addCharacters(character);
         res.status(201).send(character);
       });
+    })
+    .catch((err) => {
+      debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
+      return res.status(500).send('Error retrieving user and adding characters.');
+    });
+});
+
+//
+// Update a character
+//
+router.put('/', async function (req, res) {
+  if (!req.body.name) return res.status(200).send('Character name cannot be empty.');
+
+  const userId = parseInt(req.user.id);
+  const characterId = parseInt(req.body.id);
+  const { id, name, level, classType, description } = req.body;
+  const date = new Date().toISOString();
+
+  const character = await db.characters
+  .findOne({ where: { id: characterId, userId: userId } })
+  .catch((err) => {
+    debug('Could not find character to update. %o', JSON.stringify(err));
+    return null;
+  });
+
+  if (character === null) return res.status(500).send();
+
+  character.name = name;
+  character.classType = classType;
+  character.level = level;
+  character. description = description;
+  character.updatedAt = date;
+
+  return db.characters
+    .update(character, {where: { id: characterId, userId: userId }})
+    .then((character) => {
+      return res.status(201).send(character);
     })
     .catch((err) => {
       debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
