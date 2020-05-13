@@ -39,7 +39,7 @@ router.get('/:id', function (req, res) {
 // Create a character
 //
 router.post('/', async function (req, res) {
-  if (!req.body.name) return res.status(200).send('Character name cannot be empty.');
+  if (!req.body.name) return res.status(400).send('Character name cannot be empty.');
 
   const userId = parseInt(req.user.id);
   const { name, level, classType, description } = req.body;
@@ -62,12 +62,15 @@ router.post('/', async function (req, res) {
 // Update a character
 //
 router.put('/', async function (req, res) {
-  if (!req.body.name) return res.status(200).send('Character name cannot be empty.');
+  // TODO: update this to provide better validation.
+  if (!req.body.id) return res.status(400).send('Character id is required.');
+  if (!req.body.name) return res.status(400).send('Character name is required.');
+  if (!req.body.level) return res.status(400).send('Character level is required.');
+  if (!req.body.classType) return res.status(400).send('Character classType is required.');
+  if (!req.body.description) return res.status(400).send('Character description is required.');
 
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.body.id);
-  const { id, name, level, classType, description } = req.body;
-  const date = new Date().toISOString();
 
   const character = await db.characters
   .findOne({ where: { id: characterId, userId: userId } })
@@ -76,22 +79,24 @@ router.put('/', async function (req, res) {
     return null;
   });
 
-  if (character === null) return res.status(500).send();
+  if (character === null) return res.status(500).send('Could not find character to update.');
 
-  character.name = name;
-  character.classType = classType;
-  character.level = level;
-  character. description = description;
-  character.updatedAt = date;
+  // Make sure we only update the DB with the properties we want to update.
+  const updatedCharacter = {
+    name: req.body.name,
+    classType: req.body.classType,
+    level: req.body.level,
+    description: req.body.description
+  }
 
   return db.characters
-    .update(character, {where: { id: characterId, userId: userId }})
-    .then((character) => {
-      return res.status(201).send(character);
+    .update(updatedCharacter, {returning: true, where: { id: characterId, userId: userId }})
+    .then(() => {
+      res.status(201).send();
     })
     .catch((err) => {
-      debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
-      return res.status(500).send('Error retrieving user and adding characters.');
+      debug('Error updating character. %o', err);
+      return res.status(500).send('Error updating character.');
     });
 });
 
