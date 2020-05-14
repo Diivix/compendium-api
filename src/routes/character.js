@@ -8,14 +8,19 @@ const debug = require('debug')('route:character'); // debug logger
 router.get('/', function (req, res) {
   const userId = parseInt(req.user.id);
 
-  return db.users
-    .findByPk(userId)
-    .then((user) => {
-      user.getCharacters().then((characters) => res.status(200).send(characters));
+  return db.characters
+    .findAll({
+      where: { userId: userId },
+      include: {
+        model: db.spells,
+        attributes: { exclude: ['description', 'atHigherLevels', 'reference', 'createdAt', 'updatedAt', 'tags'] },
+        through: { attributes: [] }, // this will remove the rows from the join table.
+      },
     })
+    .then((characters) => res.status(200).send(characters))
     .catch((err) => {
-      debug('Error retrieving user and characters. %o', JSON.stringify(err));
-      return res.status(500).send('Error retrieving user and characters.');
+      debug('Error retrieving characters. %o', JSON.stringify(err));
+      return res.status(500).send('Error retrieving characters.');
     });
 });
 
@@ -44,19 +49,16 @@ router.post('/', async function (req, res) {
   const userId = parseInt(req.user.id);
   const { name, level, classType, description } = req.body;
   const date = new Date().toISOString();
-  return db.users
-    .findByPk(userId)
-    .then((user) => { 
-      db.characters
-        .create({ userId: id, name, level, classType, description, date, date })
-        .then((character) => {
-          user.addCharacters(character);
-          res.status(201).send(character);
-      });
+
+  return db.characters
+    .create({ userId, name, level, classType, description, date, date })
+    .then((character) => {
+      // user.addCharacters(character);
+      res.status(201).send(character);
     })
     .catch((err) => {
-      debug('Error retrieving user and adding characters. %o', JSON.stringify(err));
-      return res.status(500).send('Error retrieving user and adding characters.');
+      debug('Error adding character. %o', JSON.stringify(err));
+      return res.status(500).send('Error adding character.');
     });
 });
 
@@ -131,14 +133,12 @@ router.put('/addspell', async function (req, res) {
   if (!req.body.spellId) return res.status(400).send('A Spell ID is required.');
 
   const userId = parseInt(req.user.id);
-  const characterId = parseInt(req.params.id);
-  const spellId = parseInt(req.params.spellId);
+  const characterId = parseInt(req.body.characterId);
+  const spellId = parseInt(req.body.spellId);
 
-  const character = await db.characters
-    .findOne({ where: { id: characterId, userId: userId } })
-    .catch((err) => {
-      debug('Error retrieving user. %o', JSON.stringify(err));
-      return null;
+  const character = await db.characters.findOne({ where: { id: characterId, userId: userId } }).catch((err) => {
+    debug('Error retrieving character. %o', JSON.stringify(err));
+    return null;
   });
 
   const spell = await db.spells.findByPk(spellId).catch((err) => {
@@ -146,22 +146,19 @@ router.put('/addspell', async function (req, res) {
     return null;
   });
 
-  if (!user) return res.status(500).send('Error retrieving user.');
   if (!character) return res.status(500).send('Error retrieving character.');
   if (!spell) return res.status(500).send('Error retrieving spell.');
 
-  const character_spell = await db.characters_spells
-    .findOne({ where: { characterId, spellId } })
-    .catch((err) => {
-      debug('Error retrieving characters_spells. %o', JSON.stringify(err));
-      return null;
+  const character_spell = await db.characters_spells.findOne({ where: { characterId, spellId } }).catch((err) => {
+    debug('Error retrieving characters_spells. %o', JSON.stringify(err));
+    return null;
   });
 
   if (character_spell) {
     return res.status(401).send('Spell has already been added to the character.');
-  } else if (character_spell === null) {
-    return res.status(500).send('Error retrieving characters_spells.');
   }
+
+  const date = new Date().toISOString();
 
   return db.characters_spells
     .create({ characterId, spellId, date, date })
