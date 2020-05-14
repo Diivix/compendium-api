@@ -11,6 +11,7 @@ router.get('/', function (req, res) {
   return db.characters
     .findAll({
       where: { userId: userId },
+      attributes: { exclude: ['userId'] },
       include: {
         model: db.spells,
         attributes: { exclude: ['description', 'atHigherLevels', 'reference', 'createdAt', 'updatedAt', 'tags'] },
