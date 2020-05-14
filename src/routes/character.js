@@ -46,10 +46,12 @@ router.post('/', async function (req, res) {
   const date = new Date().toISOString();
   return db.users
     .findByPk(userId)
-    .then((user) => {
-      db.characters.create({ userId: id, name, level, classType, description, date, date }).then((character) => {
-        user.addCharacters(character);
-        res.status(201).send(character);
+    .then((user) => { 
+      db.characters
+        .create({ userId: id, name, level, classType, description, date, date })
+        .then((character) => {
+          user.addCharacters(character);
+          res.status(201).send(character);
       });
     })
     .catch((err) => {
@@ -72,9 +74,7 @@ router.put('/', async function (req, res) {
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.body.id);
 
-  const character = await db.characters
-  .findOne({ where: { id: characterId, userId: userId } })
-  .catch((err) => {
+  const character = await db.characters.findOne({ where: { id: characterId, userId: userId } }).catch((err) => {
     debug('Could not find character to update. %o', JSON.stringify(err));
     return null;
   });
@@ -86,11 +86,11 @@ router.put('/', async function (req, res) {
     name: req.body.name,
     classType: req.body.classType,
     level: req.body.level,
-    description: req.body.description
-  }
+    description: req.body.description,
+  };
 
   return db.characters
-    .update(updatedCharacter, {returning: true, where: { id: characterId, userId: userId }})
+    .update(updatedCharacter, { returning: true, where: { id: characterId, userId: userId } })
     .then(() => {
       res.status(201).send();
     })
@@ -107,11 +107,9 @@ router.delete('/:id', async function (req, res) {
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.params.id);
 
-  const character = await db.characters
-    .findOne({ where: { id: characterId, userId: userId } })
-    .catch((err) => {
-      debug('Could not find character to delete. %o', JSON.stringify(err));
-      return null;
+  const character = await db.characters.findOne({ where: { id: characterId, userId: userId } }).catch((err) => {
+    debug('Could not find character to delete. %o', JSON.stringify(err));
+    return null;
   });
 
   if (character === null) return res.status(500).send();
@@ -128,14 +126,19 @@ router.delete('/:id', async function (req, res) {
 //
 // Add a spell to a character
 //
-router.put('/:id/spell/:spellId', async function (req, res) {
+router.put('/addspell', async function (req, res) {
+  if (!req.body.characterId) return res.status(400).send('A Character ID is required.');
+  if (!req.body.spellId) return res.status(400).send('A Spell ID is required.');
+
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.params.id);
   const spellId = parseInt(req.params.spellId);
 
-  const user = await db.users.findByPk(userId).catch((err) => {
-    debug('Error retrieving user. %o', JSON.stringify(err));
-    return null;
+  const character = await db.characters
+    .findOne({ where: { id: characterId, userId: userId } })
+    .catch((err) => {
+      debug('Error retrieving user. %o', JSON.stringify(err));
+      return null;
   });
 
   const spell = await db.spells.findByPk(spellId).catch((err) => {
@@ -144,28 +147,31 @@ router.put('/:id/spell/:spellId', async function (req, res) {
   });
 
   if (!user) return res.status(500).send('Error retrieving user.');
+  if (!character) return res.status(500).send('Error retrieving character.');
   if (!spell) return res.status(500).send('Error retrieving spell.');
 
-  return user.getCharacters({ where: { id: characterId } }).then((characters) => {
-    if (characters && characters.length === 1) {
-      characters[0]
-        .addSpell(spell)
-        .then((result) => {
-          if (result) {
-            return res.status(201).send(result);
-          } else {
-            return res.status(204); // 204 - no response, spell already associated.
-          }
-        })
-        .catch((err) => {
-          debug('Error associating character with spell. %o', JSON.stringify(err));
-          return res.status(500).send('Error associating character with spell.');
-        });
-    } else {
-      debug('Error adding spell to character: ' + characterId);
-      return res.status(500).send('Error retrieving character.');
-    }
+  const character_spell = await db.characters_spells
+    .findOne({ where: { characterId, spellId } })
+    .catch((err) => {
+      debug('Error retrieving characters_spells. %o', JSON.stringify(err));
+      return null;
   });
+
+  if (character_spell) {
+    return res.status(401).send('Spell has already been added to the character.');
+  } else if (character_spell === null) {
+    return res.status(500).send('Error retrieving characters_spells.');
+  }
+
+  return db.characters_spells
+    .create({ characterId, spellId, date, date })
+    .then(() => {
+      res.status(201).send();
+    })
+    .catch((err) => {
+      debug('Error adding spell to character. %o', err);
+      return res.status(500).send('Error adding spell to character.');
+    });
 });
 
 module.exports = router;
