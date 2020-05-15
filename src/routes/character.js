@@ -44,7 +44,7 @@ router.get('/:id', function (req, res) {
 //
 // Create a character
 //
-router.post('/', async function (req, res) {
+router.post('/create/', async function (req, res) {
   if (!req.body.name) return res.status(400).send('Character name cannot be empty.');
 
   const userId = parseInt(req.user.id);
@@ -66,7 +66,7 @@ router.post('/', async function (req, res) {
 //
 // Update a character
 //
-router.put('/', async function (req, res) {
+router.put('/update/', async function (req, res) {
   // TODO: update this to provide better validation.
   if (!req.body.id) return res.status(400).send('Character id is required.');
   if (!req.body.name) return res.status(400).send('Character name is required.');
@@ -106,7 +106,7 @@ router.put('/', async function (req, res) {
 //
 // Delete a character
 //
-router.delete('/:id', async function (req, res) {
+router.delete('/delete/:id', async function (req, res) {
   const userId = parseInt(req.user.id);
   const characterId = parseInt(req.params.id);
 
@@ -169,6 +169,45 @@ router.put('/addspell', async function (req, res) {
     .catch((err) => {
       debug('Error adding spell to character. %o', err);
       return res.status(500).send('Error adding spell to character.');
+    });
+});
+
+//
+// Remove a spell from a character
+//
+router.delete('/removespell', async function (req, res) {
+  if (!req.body.characterId) return res.status(400).send('A Character ID is required.');
+  if (!req.body.spellId) return res.status(400).send('A Spell ID is required.');
+
+  const userId = parseInt(req.user.id);
+  const characterId = parseInt(req.body.characterId);
+  const spellId = parseInt(req.body.spellId);
+
+  const character = await db.characters.findOne({ where: { id: characterId, userId: userId } }).catch((err) => {
+    debug('Error retrieving character. %o', JSON.stringify(err));
+    return null;
+  });
+
+  // Ensure the user owns the character before removing the spell
+  if (!character) {
+    return res.status(401).send('Error retrieving character.');
+  }
+
+  const character_spell = await db.characters_spells.findOne({ where: { characterId, spellId } }).catch((err) => {
+    debug('Error retrieving characters_spells. %o', JSON.stringify(err));
+    return null;
+  });
+
+  if (!character_spell) {
+    return res.status(401).send('Either the character does not exist, or the spell has not being added to the character.');
+  }
+
+  return db.characters_spells
+    .destroy({ where: { characterId, spellId }})
+    .then(() => res.status(200).send())
+    .catch((err) => {
+      debug('Error removing spell from character. %o', err);
+      return res.status(500).send('Error removing spell from character.');
     });
 });
 
