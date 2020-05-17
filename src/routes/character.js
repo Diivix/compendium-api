@@ -44,7 +44,7 @@ router.get('/:id', function (req, res) {
 //
 // Create a character
 //
-router.post('/create/', async function (req, res) {
+router.post('/create', async function (req, res) {
   if (!req.body.name) return res.status(400).send('Character name cannot be empty.');
 
   const userId = parseInt(req.user.id);
@@ -66,7 +66,7 @@ router.post('/create/', async function (req, res) {
 //
 // Update a character
 //
-router.put('/update/', async function (req, res) {
+router.put('/update', async function (req, res) {
   // TODO: update this to provide better validation.
   if (!req.body.id) return res.status(400).send('Character id is required.');
   if (!req.body.name) return res.status(400).send('Character name is required.');

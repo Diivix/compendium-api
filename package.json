@@ -24,13 +24,13 @@
     "passport": "^0.4.1",
     "passport-http": "^0.3.0",
     "passport-jwt": "^4.0.0",
-    "sequelize": "^5.21.7",
-    "sqlite3": "^4.1.1",
+    "sequelize": "^5.21.9",
+    "sqlite3": "^4.2.0",
     "url": "^0.11.0"
   },
   "devDependencies": {
-    "jest": "^25.4.0",
-    "nodemon": "^2.0.3",
+    "jest": "^25.5.4",
+    "nodemon": "^2.0.4",
     "supertest": "^4.0.2"
   },
   "jest": {
