@@ -156,7 +156,7 @@ router.put('/addspell', async function (req, res) {
   });
 
   if (character_spell) {
-    return res.status(401).send('Spell has already been added to the character.');
+    return res.status(400).send('Spell has already been added to the character.');
   }
 
   const date = new Date().toISOString();
@@ -190,7 +190,7 @@ router.delete('/removespell', async function (req, res) {
 
   // Ensure the user owns the character before removing the spell
   if (!character) {
-    return res.status(401).send('Error retrieving character.');
+    return res.status(400).send('Error retrieving character.');
   }
 
   const character_spell = await db.characters_spells.findOne({ where: { characterId, spellId } }).catch((err) => {
@@ -199,7 +199,7 @@ router.delete('/removespell', async function (req, res) {
   });
 
   if (!character_spell) {
-    return res.status(401).send('Either the character does not exist, or the spell has not being added to the character.');
+    return res.status(400).send('Either the character does not exist, or the spell has not being added to the character.');
   }
 
   return db.characters_spells
