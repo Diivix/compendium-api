@@ -51,8 +51,13 @@ router.post('/create', async function (req, res) {
   const { name, level, classType, description } = req.body;
   const date = new Date().toISOString();
 
+  const encodedName = encodeURIComponent(name);
+  const encodedLevel = encodeURIComponent(level);
+  const encodedClassType = encodeURIComponent(classType);
+  const encodedDescription = encodeURIComponent(description);
+
   return db.characters
-    .create({ userId, name, level, classType, description, date, date })
+    .create({ userId, encodedName, encodedLevel, encodedClassType, encodedDescription, date, date })
     .then((character) => {
       // user.addCharacters(character);
       res.status(201).send(character);
@@ -86,10 +91,10 @@ router.put('/update', async function (req, res) {
 
   // Make sure we only update the DB with the properties we want to update.
   const updatedCharacter = {
-    name: req.body.name,
-    classType: req.body.classType,
-    level: req.body.level,
-    description: req.body.description,
+    name: encodeURIComponent(req.body.name),
+    classType: encodeURIComponent(req.body.classType),
+    level: encodeURIComponent(req.body.level),
+    description: encodeURIComponent(req.body.description),
   };
 
   return db.characters
