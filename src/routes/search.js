@@ -13,7 +13,7 @@ router.get('/', async function (req, res) {
   let hasError = false;
 
   // TODO: Fix error handling: https://dev.to/nedsoft/central-error-handling-in-express-3aej
-  if (query === null || query === '') return res.status(400).send(new Error('A search query must be provided.'));
+  if (query === null || query === '') return res.status(400).send('A search query must be provided.');
   if (query.length < 3) return res.status(400).send("A search query must be longer than 3 characters.");
 
   // Search characters
