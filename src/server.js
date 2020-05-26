@@ -8,6 +8,7 @@ const morgan = require('morgan')         // request logger
 const userRouter = require('./routes/user');
 const characterRouter = require('./routes/character');
 const spellRouter = require('./routes/spell');
+const searchRouter = require('./routes/search');
 const jwtStrategy = require('./utils/auth');
 
 const app = express();
@@ -36,6 +37,7 @@ passport.use(jwtStrategy);
 app.use('/user', passport.authenticate('jwt', { session: false }), userRouter);
 app.use('/character', passport.authenticate('jwt', { session: false }), characterRouter);
 app.use('/spell', passport.authenticate('jwt', { session: false }), spellRouter);
+app.use('/search', passport.authenticate('jwt', { session: false }), searchRouter);
 
 // Default route
 app.use('/', function(req, res) {

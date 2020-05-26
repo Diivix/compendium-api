@@ -1,7 +1,10 @@
-const utils = {
+const utils = require('./common');
+
+const spellUtils = {
   unique: items => unique(items),
   filters: items => filters(items),
-  nameComparer: (a, b) => nameComparer(a, b)
+  nameComparer: (a, b) => nameComparer(a, b),
+  buildLevel: (level, type) => buildLevel(level, type)
 };
 
 const unique = spells => {
@@ -60,4 +63,27 @@ const nameComparer = (a, b) => {
   return 0;
 };
 
-module.exports = utils;
+const buildLevel = (level, type) => {
+  let value;
+  switch (level) {
+    case 0:
+      value = utils.upperFirst(type) + ' cantrip';
+      break;
+    case 1:
+      value = level + 'st level ' + utils.upperFirst(type);
+      break;
+    case 2:
+      value = level + 'nd level ' + utils.upperFirst(type);
+      break;
+    case 3:
+      value = level + 'rd level ' + utils.upperFirst(type);
+      break;
+    default:
+      value = level + 'th level ' + utils.upperFirst(type);
+      break;
+  }
+
+  return value;
+}
+
+module.exports = spellUtils;

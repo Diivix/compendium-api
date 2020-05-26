@@ -1,7 +1,7 @@
 const router = require('express').Router();
 const db = require('../models');
 const debug = require('debug')('route:spell'); // debug logger
-const utils = require('../utils/spells');
+const spellUtils = require('../utils/spells');
 
 const exclusionAttributes = { attributes: { exclude: ['description', 'atHigherLevels', 'reference', 'createdAt', 'updatedAt'] } };
 
@@ -18,7 +18,7 @@ router.get('/', function(req, res) {
   return db.spells
     .findAll(attributes)
     .then(spells => {
-      const sorted = spells.sort((a, b) => utils.nameComparer(a, b));
+      const sorted = spells.sort((a, b) => spellUtils.nameComparer(a, b));
       return res.status(200).send(limit !== null ? sorted.slice(0, limit) : sorted);
     })
     .catch(err => {
@@ -34,7 +34,7 @@ router.get('/unique', function(req, res) {
   return db.spells
     .findAll()
     .then(spells => {
-      return res.status(200).send(utils.unique(spells));
+      return res.status(200).send(spellUtils.unique(spells));
     })
     .catch(err => {
       debug('Error retrieving spells. %o', JSON.stringify(err));
@@ -50,7 +50,7 @@ router.get('/filters', function(req, res) {
   return db.spells
     .findAll({ attributes: ['id', 'name', 'tags'] })
     .then(spells => {
-      return res.status(200).send(utils.filters(spells));
+      return res.status(200).send(spellUtils.filters(spells));
     })
     .catch(err => {
       debug('Error retrieving spell filters. %o', JSON.stringify(err));
@@ -103,7 +103,7 @@ router.post('/query', function(req, res) {
           // FIXME: This is bad. Were getting all the spells from the db then filtering on them :(
           filteredSpells = spells.filter(spell => spell.tags.some(tag => query.tags.includes(tag)));
         }
-        const sorted = filteredSpells.sort((a, b) => utils.nameComparer(a, b));
+        const sorted = filteredSpells.sort((a, b) => spellUtils.nameComparer(a, b));
         return res.status(200).send(limit !== null ? sorted.slice(0, limit) : sorted);
       }
       return res.status(200).send(spells);
