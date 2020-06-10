@@ -47,6 +47,7 @@ router.get('/:id', function (req, res) {
 router.post('/create', async function (req, res) {
   if (!req.body.name) return res.status(400).send('Character name cannot be empty.');
 
+
   const userId = parseInt(req.user.id);
   const { name, level, classType, description } = req.body;
   const date = new Date().toISOString();
@@ -55,11 +56,10 @@ router.post('/create', async function (req, res) {
   const encodedLevel = encodeURIComponent(level);
   const encodedClassType = encodeURIComponent(classType);
   const encodedDescription = encodeURIComponent(description);
-
+  
   return db.characters
     .create({ userId, encodedName, encodedLevel, encodedClassType, encodedDescription, date, date })
     .then((character) => {
-      // user.addCharacters(character);
       res.status(201).send(character);
     })
     .catch((err) => {

@@ -15,7 +15,7 @@ const strategy = new JwtStrategy(opts, function(jwt_payload, done) {
   debug('Authenticating with Passport jwt strategy');
   debug('JWT payload is: %o', JSON.stringify(jwt_payload));
   db.users
-    .findOrCreate({ where: { email: jwt_payload.claims.sub } })
+    .findOrCreate({ where: { email: jwt_payload.email } })
     .then(([user, created]) => {
       if(created) {
         debug('User created, new user is %o', user.email);
