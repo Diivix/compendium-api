@@ -56,9 +56,11 @@ router.post('/create', async function (req, res) {
   const encodedLevel = encodeURIComponent(level);
   const encodedClassType = encodeURIComponent(classType);
   const encodedDescription = encodeURIComponent(description);
+
+  console.log('############## ' + encodedName);
   
   return db.characters
-    .create({ userId, encodedName, encodedLevel, encodedClassType, encodedDescription, date, date })
+    .create({ userId, name: encodedName, level: encodedLevel, classType: encodedClassType, description: encodedDescription, date, date })
     .then((character) => {
       res.status(201).send(character);
     })
